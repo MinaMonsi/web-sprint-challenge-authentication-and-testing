@@ -54,6 +54,13 @@ Your finished project must include all of the following requirements (further in
 Be prepared to demonstrate your understanding of this week's concepts by answering questions on the following topics.
 
 1. Differences between using _sessions_ or _JSON Web Tokens_ for authentication.
+   Authentication process via tokens in a web application:
+   In modern web applications we use HTTP to transmit data between the server side and the client side. When a user logs in to an account a session is created and cookies or JWT can be used to authenticate the users who are accessing the application. In a cookie session the server is responsible for the authentication. The server verifies the session data on the cookie with the session data stored in server memory. This happens when the user initially logs in. When the user logs out from the website, that session data is deleted from the database and the server memory.
+   In JWT based authentication we use JSON Web Tokens(JWTs). When the user logs in, the server creates and encrypted token in the form of a JWT and sends it back to the client. When the client recieves a token, it means the user is authenticated to perform any activity using the client.
+   On the logout operation, the token on the client-side is destroyed without server interaction.
 2. What does `bcryptjs` do to help us store passwords in a secure manner?
+   `bcryptjs` incorporates salt both manually and automatically to protect against rainbow table attacks, it uses a password hashing funtion, and has accumulative hasshing rounds. Bycrypt is an adaptive function and is compatible with C++ bycrypt binding.
 3. How are unit tests different from integration and end-to-end testing?
+   In end-to-end testing, the behavioral flow of the software is tested. It focuses on functional verification by checking that individual, isolated parts work as expected. Integration testing verifies that several units work together in harmony. The purpose of integrated testing is to expose the faults in the interaction between integrated units.
 4. How does _Test Driven Development_ change the way we write applications and tests?
+   Test-driven development is a process of modifiying the code in order to pass a test designed previously. This form of testing includes refactoring a code i.e. changinf/adding some amount of code to the existing code without affecting the behavior of the code. TDD should result in faster, more extensible code with fewer bugs that can be uppdated with minimal risks.
