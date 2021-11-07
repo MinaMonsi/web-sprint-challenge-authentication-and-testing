@@ -1,7 +1,28 @@
 const router = require('express').Router();
+const bcrypt = require('bcrypt');
+const { json } = require('express');
+const jwt = require("jsonwebtoken");
+const dbConfig = require('../../data/dbConfig');
+const {jwtSecret} = require('../../data/dbConfig')
+const Users = require('../users/users-model')
 
-router.post('/register', (req, res) => {
-  res.end('implement register, please!');
+router.post('/register', async (req, res) => {
+  try {
+    const {username, password} = req.body
+    const newUser = await Users.add({
+      username, 
+      password: bcrypt.hashSync(password, 8),
+    })
+    res.status(201).json(newUser)
+    
+  } catch (error) {
+    res.status(500).json({message: error.message})
+  }
+  // let user = req.body;
+  // const rounds = process.env.
+  // BCRYPT_ROUNDS || 8;
+  // const hash = bcrypt.hashSync(user.password, rounds)
+  // user.password = hash
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -29,8 +50,19 @@ router.post('/register', (req, res) => {
   */
 });
 
-router.post('/login', (req, res) => {
-  res.end('implement login, please!');
+router.post('/login', async(req, res, next ) => {
+  const user = await Users.getUser(req.body.username)
+  try {
+    const {username, password} = req.body
+    if (bcrypt.compareSync(password,user.password)) {
+      res.status(200).json({message: `Welcome ${user.username}`, token: 'token'})
+    } else {
+      res.status(401).json({message: "Invalid credentials"})
+    }
+
+  } catch (error) {
+    res.status(500).json({message: error.message })
+  }
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
