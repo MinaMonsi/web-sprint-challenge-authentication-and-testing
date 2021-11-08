@@ -5,10 +5,12 @@ const jwt = require("jsonwebtoken");
 const dbConfig = require('../../data/dbConfig');
 const {jwtSecret} = require('../../data/dbConfig')
 const Users = require('../users/users-model')
-const userNameExists = require('../middleware/userNameExists')
+const usernameExists = require('../middleware/usernameExists')
 const uniqueUsername = require('../middleware/uniqueUsername')
+const checkLogin = require('../middleware/checkLogin')
 
-const secret = process.env.SECRET || "adkljffkjh,kjsdhfakjd;"
+const secret = process.env.SECRET || "adkljffkjh,kjsdhfakjd;" 
+
 function makeToken(user){
   const payload = {
     subject:user.id,
@@ -21,7 +23,7 @@ function makeToken(user){
 
 }
 
-router.post('/register', uniqueUsername, async (req, res) => {
+router.post('/register', uniqueUsername, checkLogin, async (req, res) => {
   try {
     const {username, password} = req.body
     const newUser = await Users.add({
@@ -61,7 +63,7 @@ router.post('/register', uniqueUsername, async (req, res) => {
   */
 });
 
-router.post('/login', userNameExists, async(req, res, next ) => {
+router.post('/login', usernameExists, async(req, res, next ) => {
   try {
     const {username, password} = req.body
     if (bcrypt.compareSync(password,req.user.password)) {
