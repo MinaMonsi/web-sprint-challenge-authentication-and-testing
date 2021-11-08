@@ -5,6 +5,20 @@ const jwt = require("jsonwebtoken");
 const dbConfig = require('../../data/dbConfig');
 const {jwtSecret} = require('../../data/dbConfig')
 const Users = require('../users/users-model')
+const userNameExists = require('../middleware/userNameExists')
+
+const secret = process.env.SECRET || "adkljffkjh,kjsdhfakjd;"
+function makeToken(user){
+  const payload = {
+    subject:user.id,
+    username:user.username
+  }
+  const options = {
+    expiresIn: "1d"
+  }
+  return jwt.sign(payload, secret, options)
+
+}
 
 router.post('/register', async (req, res) => {
   try {
@@ -18,11 +32,7 @@ router.post('/register', async (req, res) => {
   } catch (error) {
     res.status(500).json({message: error.message})
   }
-  // let user = req.body;
-  // const rounds = process.env.
-  // BCRYPT_ROUNDS || 8;
-  // const hash = bcrypt.hashSync(user.password, rounds)
-  // user.password = hash
+  
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -50,12 +60,11 @@ router.post('/register', async (req, res) => {
   */
 });
 
-router.post('/login', async(req, res, next ) => {
-  const user = await Users.getUser(req.body.username)
+router.post('/login', userNameExists, async(req, res, next ) => {
   try {
     const {username, password} = req.body
-    if (bcrypt.compareSync(password,user.password)) {
-      res.status(200).json({message: `Welcome ${user.username}`, token: 'token'})
+    if (bcrypt.compareSync(password,req.user.password)) {
+      res.status(200).json({message: `Welcome ${req.user.username}`, token: makeToken(req.user)})
     } else {
       res.status(401).json({message: "Invalid credentials"})
     }
