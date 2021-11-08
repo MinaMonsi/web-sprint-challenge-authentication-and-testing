@@ -6,6 +6,7 @@ const dbConfig = require('../../data/dbConfig');
 const {jwtSecret} = require('../../data/dbConfig')
 const Users = require('../users/users-model')
 const userNameExists = require('../middleware/userNameExists')
+const uniqueUsername = require('../middleware/uniqueUsername')
 
 const secret = process.env.SECRET || "adkljffkjh,kjsdhfakjd;"
 function makeToken(user){
@@ -20,7 +21,7 @@ function makeToken(user){
 
 }
 
-router.post('/register', async (req, res) => {
+router.post('/register', uniqueUsername, async (req, res) => {
   try {
     const {username, password} = req.body
     const newUser = await Users.add({
@@ -64,7 +65,7 @@ router.post('/login', userNameExists, async(req, res, next ) => {
   try {
     const {username, password} = req.body
     if (bcrypt.compareSync(password,req.user.password)) {
-      res.status(200).json({message: `Welcome ${req.user.username}`, token: makeToken(req.user)})
+      res.status(200).json({message: `Welcome, ${req.user.username}`, token: makeToken(req.user)})
     } else {
       res.status(401).json({message: "Invalid credentials"})
     }
